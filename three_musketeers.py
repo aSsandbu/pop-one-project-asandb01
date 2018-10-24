@@ -42,14 +42,14 @@ def string_to_location(s):
        is outside of the correct range (between 'A' and 'E' for s[0] and
        between '1' and '5' for s[1]
        """
-    pass # Replace with code
+    return (ord(s[0])-65, int(s[1])-1)
 
 def location_to_string(location):
     """Returns the string representation of a location.
     Similarly to the previous function, this function should raise
     ValueError exception if the input is outside of the correct range
     """
-    pass # Replace with code
+    return chr(location[0]+65) + str(location[1]+1)
 
 def at(location):
     """Returns the contents of the board at the given location.
