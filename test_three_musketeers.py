@@ -78,24 +78,25 @@ def test_has_some_legal_move_somewhere():
     # with at least one additional board
 
 def test_possible_moves_from():
-    # Replace with tests
+    assert len(possible_moves_from((2,2))) == 4
 
 def test_is_legal_location():
-    # Replace with tests
+    assert is_legal_location((2,2)) == True
 
 def test_is_within_board():
-    # Replace with tests
+    assert is_within_board((0,0), 'left') == False
+    #assert is_within_board((3,4), 'right') == True
 
 def test_all_possible_moves_for():
-    # Replace with tests
-    
-def test_make_move():
-    # Replace with tests
+    # Returns every possible move for the player ('M' or 'R') as a list(location, direction) tuples.
+    assert len(all_possible_moves_for('M')) == 8
+
+#def test_make_move():
     
 def test_choose_computer_move():
-    # Replace with tests; should work for both 'M' and 'R'
+    assert choose_computer_move('M') == ((2,2), 'left')
 
 def test_is_enemy_win():
-    # Replace with tests
+    assert is_enemy_win() == False
 
 
