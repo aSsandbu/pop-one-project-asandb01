@@ -58,20 +58,38 @@ def at(location):
 
 def all_locations():
     """Returns a list of all 25 locations on the board."""
-    pass # Replace with code
+    l = []
+    for i in range(4):
+        l += board[i]
+    return l
 
 def adjacent_location(location, direction):
     """Return the location next to the given one, in the given direction.
        Does not check if the location returned is legal on a 5x5 board.
        You can assume that input will always be in correct range."""
     (row, column) = location
-    pass # Replace with code
+    if direction == 'up':
+        row -= 1
+    elif direction == 'down':
+        row += 1
+    elif direction == 'left':
+        column -= 1
+    elif direction == 'right':
+        column += 1
+    return (row, column)
 
 def is_legal_move_by_musketeer(location, direction):
     """Tests if the Musketeer at the location can move in the direction.
     You can assume that input will always be in correct range. Raises
     ValueError exception if at(location) is not 'M'"""
-    pass # Replace with code
+    if at(location) == 'M':
+        move = adjacent_location(location, direction)
+        if 0 <= move[0] <= 4 and 0 <= move[1] <= 4:
+            return True
+        else:
+            return False
+    else:
+        raise ValueError
 
 def is_legal_move_by_enemy(location, direction):
     """Tests if the enemy at the location can move in the direction.
