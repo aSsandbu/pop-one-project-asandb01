@@ -84,7 +84,7 @@ def is_legal_move_by_musketeer(location, direction):
     ValueError exception if at(location) is not 'M'"""
     if at(location) == 'M':
         move = adjacent_location(location, direction)
-        if 0 <= move[0] <= 4 and 0 <= move[1] <= 4:
+        if at(move) == 'R' and 0 <= move[0] <= 4 and 0 <= move[1] <= 4:
             return True
         else:
             return False
@@ -95,13 +95,21 @@ def is_legal_move_by_enemy(location, direction):
     """Tests if the enemy at the location can move in the direction.
     You can assume that input will always be in correct range. Raises
     ValueError exception if at(location) is not 'R'"""
-    pass # Replace with code
+    if at(location) == 'R':
+        move = adjacent_location(location, direction)
+        if at(move) == '-' and is_within_board(location, direction):
+            return True
+        else:
+            return False
+    else:
+        raise ValueError
 
 def is_legal_move(location, direction):
     """Tests whether it is legal to move the piece at the location
     in the given direction.
     You can assume that input will always be in correct range."""
-    pass # Replace with code
+    move = adjacent_location(location, direction)
+    
 
 def can_move_piece_at(location):
     """Tests whether the player at the location has at least one move available.
@@ -127,13 +135,20 @@ def possible_moves_from(location):
 def is_legal_location(location):
     """Tests if the location is legal on a 5x5 board.
     You can assume that input will always be in correct range."""
-    pass # Replace with code
+    if 0 <= location[0] <= 4 and 0 <= location[1] <= 4:
+        return True
+    else:
+        return False
     
 def is_within_board(location, direction):
     """Tests if the move stays within the boundaries of the board.
     You can assume that input will always be in correct range."""
-    pass # Replace with code
-    
+    move = adjacent_location(location, direction)
+    if 0 <= move[0] <= 4 and 0 <= move[1] <= 4:
+        return True
+    else:
+        return False
+
 def all_possible_moves_for(player):
     """Returns every possible move for the player ('M' or 'R') as a list
        (location, direction) tuples.
