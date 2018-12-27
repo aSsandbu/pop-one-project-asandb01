@@ -110,6 +110,16 @@ def test_make_move():
     assert at((0,4)) == '-'
     assert at((1,4)) == 'M'
 
+def test_distance():
+    assert distance((0,0), (4,4)) == 8
+    assert distance((0,0), (2,2)) == 4
+    assert distance((4,1), (0,3)) == 6
+
+def test_musketeer_distance():
+    create_board()
+    assert musketeer_distance((2,2), 'left') == 16
+    assert at((2,2)) == 'M'
+
 def test_choose_computer_move():
     create_board()
     move = choose_computer_move('M')

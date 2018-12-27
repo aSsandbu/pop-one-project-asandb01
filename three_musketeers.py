@@ -12,7 +12,7 @@
 # For brevity, Cardinal Richleau's men are referred to as "enemy".
 # 'pass' is a no-nothing Python statement. Replace it with actual code.
 
-import random
+import random, math, copy
 
 def create_board():
     global board
@@ -172,9 +172,25 @@ def make_move(location, direction):
     """Moves the piece in location in the indicated direction.
     Doesn't check if the move is legal. You can assume that input will always
     be in correct range."""
+    return make_move_local(board, location, direction)
+
+def make_move_local(local_board, location, direction):
     move = adjacent_location(location, direction)
-    board[move[0]][move[1]] = at(location)
-    board[location[0]][location[1]] = '-'
+    local_board[move[0]][move[1]] = at(location)
+    local_board[location[0]][location[1]] = '-'
+
+def distance(a, b):
+    return abs(a[0]-b[0]) + abs(a[1]-b[1])
+
+def musketeer_distance(location, direction):
+    board_copy = copy.deepcopy(board)
+    make_move_local(board_copy, location, direction)
+    locs = player_locations('M')
+    d1 = distance(locs[0], locs[1])
+    d2 = distance(locs[0], locs[2])
+    d3 = distance(locs[1], locs[2])
+    mdist = d1 + d2 + d3
+    return mdist
 
 def choose_computer_move(who):
     """The computer chooses a move for a Musketeer (who = 'M') or an
@@ -309,3 +325,6 @@ def start():
         else:
             print("The Musketeers win!")
             break
+
+if __name__ == "__main__":
+    start()
