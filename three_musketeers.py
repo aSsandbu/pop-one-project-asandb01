@@ -61,7 +61,12 @@ def location_to_string(location):
 def at(location):
     """Returns the contents of the board at the given location.
     You can assume that input will always be in correct range."""
-    return board[location[0]][location[1]]
+    return at_local(board, location)
+
+def at_local(board_local, location):
+    """Returns the contents of the board at the given location.
+    You can assume that input will always be in correct range."""
+    return board_local[location[0]][location[1]]
 
 def all_locations():
     """Returns a list of all 25 locations on the board."""
@@ -69,7 +74,10 @@ def all_locations():
     return locations
 
 def player_locations(player):
-    return [location for location in all_locations() if at(location) == player]
+    return player_locations_local(board, player)
+
+def player_locations_local(board_local, player):
+    return [location for location in all_locations() if at_local(board_local, location) == player]
 
 def adjacent_location(location, direction):
     """Return the location next to the given one, in the given direction.
@@ -180,12 +188,12 @@ def make_move_local(local_board, location, direction):
     local_board[location[0]][location[1]] = '-'
 
 def distance(a, b):
-    return abs(a[0]-b[0]) + abs(a[1]-b[1])
+    return abs(a[0]-b[0])**2 + abs(a[1]-b[1])**2
 
 def musketeer_distance(location, direction):
     board_copy = copy.deepcopy(board)
     make_move_local(board_copy, location, direction)
-    locs = player_locations('M')
+    locs = player_locations_local(board_copy, 'M')
     d1 = distance(locs[0], locs[1])
     d2 = distance(locs[0], locs[2])
     d3 = distance(locs[1], locs[2])
@@ -197,7 +205,20 @@ def choose_computer_move(who):
        enemy (who = 'R') and returns it as the tuple (location, direction),
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
-    return random.choice(all_possible_moves_for(who))
+    moves = all_possible_moves_for(who)
+    if who == 'M':
+        return choose_computer_move_musketeer(moves)
+    return random.choice(moves)
+
+def choose_computer_move_musketeer(moves):
+    max_distance = 0
+    max_move = None
+    for move in moves:
+        distance = musketeer_distance(move[0], move[1])
+        if distance > max_distance:
+            max_move = move
+            max_distance = distance
+    return max_move
 
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""
