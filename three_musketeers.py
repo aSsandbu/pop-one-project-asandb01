@@ -42,7 +42,12 @@ def string_to_location(s):
        is outside of the correct range (between 'A' and 'E' for s[0] and
        between '1' and '5' for s[1]
        """
-    return (ord(s[0])-65, int(s[1])-1)
+    x = ord(s[0])-65
+    y = int(s[1])-1
+    location = (x, y)
+    if not is_legal_location(location):
+        raise ValueError
+    return location
 
 def location_to_string(location):
     """Returns the string representation of a location.
@@ -58,7 +63,7 @@ def at(location):
 
 def all_locations():
     """Returns a list of all 25 locations on the board."""
-    locations = [board[i][j] for i in range(5) for j in range(5)]
+    locations = [(i,j) for i in range(5) for j in range(5)]
     return locations
 
 def adjacent_location(location, direction):
@@ -155,9 +160,7 @@ def possible_moves_from(location):
 def is_legal_location(location):
     """Tests if the location is legal on a 5x5 board.
     You can assume that input will always be in correct range."""
-    a = 0 <= location[0] <= 4
-    b = 0 <= location[1] <= 4
-    return a and b
+    return 0 <= location[0] <= 4 and 0 <= location[1] <= 4
 
 def is_within_board(location, direction):
     """Tests if the move stays within the boundaries of the board.
@@ -170,10 +173,14 @@ def all_possible_moves_for(player):
        (location, direction) tuples.
        You can assume that input will always be in correct range."""
     possible_moves = []
+    for l in all_locations():
+        pass
+
     for i in range(5):
         for j in range(5):
             if board[i][j] == player:
-                possible_moves_from((i,j))
+                location = (i, j)
+                moves = possible_moves_from(location)
                 if is_legal_move(location, 'up'):
                     possible_moves.append('up')
     #THIS IS NOT DONE

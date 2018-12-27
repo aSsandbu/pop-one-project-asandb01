@@ -25,7 +25,7 @@ def test_set_board():
     set_board(board1)
     assert at((0,0)) == _
     assert at((1,2)) == R
-    assert at((1,3)) == M    
+    assert at((1,3)) == M
     #eventually add some board2 and at least 3 tests with it
 
 def test_get_board():
@@ -36,7 +36,7 @@ def test_get_board():
 def test_string_to_location():
     with pytest.raises(ValueError):
         string_to_location('X3')
-    assert string_to_location('A0') == (0,0)
+    assert string_to_location('A1') == (0,0)
     #eventually add at least one more exception test and two more
     #test with correct inputs
 
@@ -45,21 +45,23 @@ def test_location_to_string():
     #assert location_to_string((2,3)) == 'C4'
 
 def test_at():
-    assert at(0,0) == 'R'
-    #assert at(2,2) == 'M'
+    create_board()
+    assert at((0,0)) == 'R'
+    assert at((2,2)) == 'M'
 
 def test_all_locations():
     r = 'R'
     m = 'M'
     assert len(all_locations()) == 25
-    #assert all_locations() == [r,r,r,r,m, r,r,r,r,r, r,r,m,r,r, r,r,r,r,m, r,r,r,r,r]
+    assert all_locations()[0] == (0,0)
+    assert all_locations()[24] == (4,4)
 
 def test_adjacent_location():
     assert adjacent_location((1,1), 'up') == (1,0)
-    
+
 def test_is_legal_move_by_musketeer():
     assert is_legal_move_by_musketeer((2,2), 'left') == True
-    
+
 def test_is_legal_move_by_enemy():
     assert is_legal_move_by_enemy((1,2, 'right')) == False
 
@@ -92,11 +94,9 @@ def test_all_possible_moves_for():
     assert len(all_possible_moves_for('M')) == 8
 
 #def test_make_move():
-    
+
 def test_choose_computer_move():
     assert choose_computer_move('M') == ((2,2), 'left')
 
 def test_is_enemy_win():
     assert is_enemy_win() == False
-
-
