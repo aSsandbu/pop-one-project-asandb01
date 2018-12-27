@@ -66,6 +66,9 @@ def all_locations():
     locations = [(i,j) for i in range(5) for j in range(5)]
     return locations
 
+def player_locations(player):
+    return [location for location in all_locations() if at(location) == player]
+
 def adjacent_location(location, direction):
     """Return the location next to the given one, in the given direction.
        Does not check if the location returned is legal on a 5x5 board.
@@ -130,8 +133,8 @@ def has_some_legal_move_somewhere(who):
     be either 'M' or 'R'). Does not provide any information on where
     the legal move is.
     You can assume that input will always be in correct range."""
-    for location in all_locations():
-        if at(location) == who and can_move_piece_at(location):
+    for location in player_locations(who):
+        if can_move_piece_at(location):
             return True
     return False
 
@@ -166,12 +169,8 @@ def all_possible_moves_for(player):
     """Returns every possible move for the player ('M' or 'R') as a list
        (location, direction) tuples.
        You can assume that input will always be in correct range."""
-    possible_moves = []
-    for location in all_locations():
-        if at(location) == player:
-            moves = possible_moves_from(location)
-            for move in moves:
-                possible_moves.append((location, move))
+    possible_moves = [(location, move) for location in player_locations(player)
+                                       for move in possible_moves_from(location)]
     return possible_moves
 
 def make_move(location, direction):

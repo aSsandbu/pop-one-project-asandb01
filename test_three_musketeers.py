@@ -57,6 +57,9 @@ def test_all_locations():
     (3,0), (3,1), (3,2), (3,3), (3,4),
     (4,0), (4,1), (4,2), (4,3), (4,4)]
 
+def test_player_locations():
+    assert player_locations('M') == [(0,4), (2,2), (4,0)]
+
 def test_adjacent_location():
     assert adjacent_location((1,1), 'up') == (0,1)
     assert adjacent_location((1,1), 'left') == (1,0)
@@ -98,7 +101,7 @@ def test_all_possible_moves_for():
     # Returns every possible move for the player ('M' or 'R') as a list(location, direction) tuples.
     assert len(all_possible_moves_for('M')) == 8
     assert all_possible_moves_for('M') == [((0,4), 'down'), ((0,4), 'left'),
-    ((2,2), 'up'), ((2,2), 'down'), ((2,2), 'left'), ((2,2), 'right'), 
+    ((2,2), 'up'), ((2,2), 'down'), ((2,2), 'left'), ((2,2), 'right'),
     ((4,0), 'up'), ((4,0), 'right')]
 
 def test_make_move():
