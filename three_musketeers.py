@@ -12,6 +12,8 @@
 # For brevity, Cardinal Richleau's men are referred to as "enemy".
 # 'pass' is a no-nothing Python statement. Replace it with actual code.
 
+import random
+
 def create_board():
     global board
     """Creates the initial Three Musketeers board and makes it globally
@@ -119,14 +121,11 @@ def is_legal_move(location, direction):
 def can_move_piece_at(location):
     """Tests whether the player at the location has at least one move available.
     You can assume that input will always be in correct range."""
-    if is_legal_move(location, 'up'):
-        return True
-    elif is_legal_move(location, 'down'):
-        return True
-    elif is_legal_move(location, 'left'):
-        return True
-    elif is_legal_move(location, 'right'):
-        return True
+    directions = ['up', 'down', 'left', 'right']
+    for dir in directions:
+        if is_legal_move(location, dir):
+            return True
+    return False
 
 def has_some_legal_move_somewhere(who):
     """Tests whether a legal move exists for player "who" (which must
@@ -184,11 +183,16 @@ def choose_computer_move(who):
        enemy (who = 'R') and returns it as the tuple (location, direction),
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
-    pass # Replace with code
+    return all_possible_moves_for(who)[0]
 
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""
-    pass # Replace with code
+    loc = player_locations('M')
+    if loc[0][0] == loc[1][0] and loc[1][0] == loc[2][0]:
+        return True
+    if loc[0][1] == loc[1][1] and loc[1][1] == loc[2][1]:
+        return True
+    return False
 
 #---------- Communicating with the user ----------
 #----you do not need to modify code below unless you find a bug

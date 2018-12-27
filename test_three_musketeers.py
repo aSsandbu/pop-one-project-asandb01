@@ -42,7 +42,7 @@ def test_string_to_location():
 
 def test_location_to_string():
     assert location_to_string((0, 4)) == 'A5'
-    #assert location_to_string((2,3)) == 'C4'
+    assert location_to_string((2,3)) == 'C4'
 
 def test_at():
     create_board()
@@ -78,7 +78,7 @@ def test_is_legal_move():
 
 def test_can_move_piece_at():
     assert can_move_piece_at((2,2)) == True
-    #assert can_move_piece_at((0,0)) == False
+    assert can_move_piece_at((0,0)) == False
 
 def test_has_some_legal_move_somewhere():
     assert has_some_legal_move_somewhere('M') == True
@@ -95,7 +95,8 @@ def test_is_legal_location():
 
 def test_is_within_board():
     assert is_within_board((0,0), 'left') == False
-    #assert is_within_board((3,4), 'right') == True
+    assert is_within_board((0,0), 'down') == True
+    assert is_within_board((3,4), 'right') == False
 
 def test_all_possible_moves_for():
     # Returns every possible move for the player ('M' or 'R') as a list(location, direction) tuples.
@@ -108,7 +109,7 @@ def test_make_move():
     pass
 
 def test_choose_computer_move():
-    assert choose_computer_move('M') == ((2,2), 'left')
+    assert choose_computer_move('M') == ((0,4), 'down')
 
 def test_is_enemy_win():
     assert is_enemy_win() == False
