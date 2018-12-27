@@ -106,10 +106,14 @@ def test_all_possible_moves_for():
     ((4,0), 'up'), ((4,0), 'right')]
 
 def test_make_move():
-    pass
+    make_move((0,4), 'down')
+    assert at((0,4)) == '-'
+    assert at((1,4)) == 'M'
 
 def test_choose_computer_move():
-    assert choose_computer_move('M') == ((0,4), 'down')
+    create_board()
+    move = choose_computer_move('M')
+    assert is_legal_move(move[0], move[1])
 
 def test_is_enemy_win():
     assert is_enemy_win() == False

@@ -143,14 +143,10 @@ def possible_moves_from(location):
        location, returns the empty list, [].
        You can assume that input will always be in correct range."""
     legal_moves = []
-    if is_legal_move(location, 'up'):
-        legal_moves.append('up')
-    if is_legal_move(location, 'down'):
-        legal_moves.append('down')
-    if is_legal_move(location, 'left'):
-        legal_moves.append('left')
-    if is_legal_move(location, 'right'):
-        legal_moves.append('right')
+    directions = ['up', 'down', 'left', 'right']
+    for dir in directions:
+        if is_legal_move(location, dir):
+            legal_moves.append(dir)
     return legal_moves
 
 def is_legal_location(location):
@@ -176,14 +172,16 @@ def make_move(location, direction):
     """Moves the piece in location in the indicated direction.
     Doesn't check if the move is legal. You can assume that input will always
     be in correct range."""
-    pass # Replace with code
+    move = adjacent_location(location, direction)
+    board[move[0]][move[1]] = at(location)
+    board[location[0]][location[1]] = '-'
 
 def choose_computer_move(who):
     """The computer chooses a move for a Musketeer (who = 'M') or an
        enemy (who = 'R') and returns it as the tuple (location, direction),
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
-    return all_possible_moves_for(who)[0]
+    return random.choice(all_possible_moves_for(who))
 
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""
