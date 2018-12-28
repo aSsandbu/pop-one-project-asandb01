@@ -188,7 +188,8 @@ def make_move_local(local_board, location, direction):
     local_board[location[0]][location[1]] = '-'
 
 def distance(a, b):
-    return abs(a[0]-b[0])**2 + abs(a[1]-b[1])**2
+    #math.sqrt() version
+    return math.sqrt(abs(a[0] - b[0])) + math.sqrt(abs(a[1] - b[1]))
 
 def musketeer_distance(location, direction):
     board_copy = copy.deepcopy(board)
@@ -205,20 +206,24 @@ def choose_computer_move(who):
        enemy (who = 'R') and returns it as the tuple (location, direction),
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
-    moves = all_possible_moves_for(who)
     if who == 'M':
-        return choose_computer_move_musketeer(moves)
+        return random.choice(choose_computer_move_musketeer())
+    moves = all_possible_moves_for(who)
     return random.choice(moves)
 
-def choose_computer_move_musketeer(moves):
+def choose_computer_move_musketeer():
+    moves = all_possible_moves_for('M')
     max_distance = 0
-    max_move = None
+    max_moves = [(0,0)]
     for move in moves:
         distance = musketeer_distance(move[0], move[1])
-        if distance > max_distance:
-            max_move = move
+        if distance > max_distance: #What if two are the same?
+            max_move = [(0,0)]
+            max_moves[0] = move
             max_distance = distance
-    return max_move
+        elif distance == max_distance:
+            max_moves.append(move)
+    return max_moves
 
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""

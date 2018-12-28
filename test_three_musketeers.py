@@ -111,14 +111,26 @@ def test_make_move():
     assert at((1,4)) == 'M'
 
 def test_distance():
-    assert distance((0,0), (4,4)) == 32
-    assert distance((0,0), (2,2)) == 8
-    assert distance((4,1), (0,3)) == 20
+    #Linear distance formula
+    '''assert distance((0,0), (4,4)) == 8
+    assert distance((0,0), (2,2)) == 4
+    assert distance((4,1), (0,3)) == 6'''
+
+    #Sqrt distance formula
+    assert distance((0,0), (4,4)) == 4
+    assert distance((0,0), (2,2)) == 2 * math.sqrt(2)
+    assert distance((4,1), (0,3)) == 2 + math.sqrt(2)
 
 def test_musketeer_distance():
     create_board()
-    assert musketeer_distance((2,2), 'left') == 50
+    assert musketeer_distance((2,2), 'left') == 5 + math.sqrt(3) + 2 * math.sqrt(2)
     assert at((2,2)) == 'M'
+
+def test_choose_computer_move_musketeer():
+    create_board()
+    make_move((2,2), 'up')
+    make_move((2,3), 'left')
+    assert choose_computer_move_musketeer() == ((1,2), 'down')
 
 def test_choose_computer_move():
     create_board()
