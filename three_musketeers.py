@@ -196,20 +196,6 @@ def make_move_local(local_board, location, direction):
     local_board[move[0]][move[1]] = at(location)
     local_board[location[0]][location[1]] = '-'
 
-def distance(a, b):
-    #math.sqrt() version
-    return math.sqrt(abs(a[0] - b[0])) + math.sqrt(abs(a[1] - b[1]))
-
-def musketeer_distance(location, direction):
-    board_copy = copy.deepcopy(board)
-    make_move_local(board_copy, location, direction)
-    locs = player_locations_local(board_copy, 'M')
-    d1 = distance(locs[0], locs[1])
-    d2 = distance(locs[0], locs[2])
-    d3 = distance(locs[1], locs[2])
-    mdist = d1 + d2 + d3
-    return mdist
-
 def choose_computer_move(who):
     """The computer chooses a move for a Musketeer (who = 'M') or an
        enemy (who = 'R') and returns it as the tuple (location, direction),
@@ -249,14 +235,17 @@ def choose_computer_move_musketeer(mode):
     elif mode == 'options':
         return maximise_move(musketeer_options)
 
-def is_enemy_win():
-    """Returns True if all 3 Musketeers are in the same row or column."""
-    loc = player_locations('M')
+def is_enemy_win_local(board):
+    loc = player_locations_local(board, 'M')
     if loc[0][0] == loc[1][0] and loc[1][0] == loc[2][0]:
         return True
     if loc[0][1] == loc[1][1] and loc[1][1] == loc[2][1]:
         return True
     return False
+
+def is_enemy_win():
+    """Returns True if all 3 Musketeers are in the same row or column."""
+    return is_enemy_win_local(board)
 
 #---------- Communicating with the user ----------
 #----you do not need to modify code below unless you find a bug
