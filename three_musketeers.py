@@ -207,23 +207,32 @@ def choose_computer_move(who):
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
     if who == 'M':
-        return random.choice(choose_computer_move_musketeer())
+        return random.choice(choose_computer_move_musketeer('distance'))
     moves = all_possible_moves_for(who)
     return random.choice(moves)
 
-def choose_computer_move_musketeer():
+def musketeer_max_options():
+    pass
+
+def choose_computer_move_musketeer_distance():
     moves = all_possible_moves_for('M')
     max_distance = 0
     max_moves = [(0,0)]
     for move in moves:
         distance = musketeer_distance(move[0], move[1])
-        if distance > max_distance: #What if two are the same?
+        if distance > max_distance:
             max_move = [(0,0)]
             max_moves[0] = move
             max_distance = distance
         elif distance == max_distance:
             max_moves.append(move)
     return max_moves
+
+def choose_computer_move_musketeer(mode):
+    if mode == 'distance':
+        return choose_computer_move_musketeer_distance()
+    else:
+        moves = all_possible_moves_for('M')
 
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""
