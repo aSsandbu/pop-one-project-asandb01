@@ -303,9 +303,6 @@ def optimum_move_rec(board, who):
     # recursively, alternate who
     return False
 
-def is_musketeer_win_local(board, who):
-    return not is_enemy_win_local(board) and not has_some_legal_move_somewhere(who)
-
 def is_enemy_win_local(board):
     loc = player_locations_local(board, 'M')
     if loc[0][0] == loc[1][0] and loc[1][0] == loc[2][0]:
