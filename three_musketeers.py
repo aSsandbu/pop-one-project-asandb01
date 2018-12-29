@@ -16,6 +16,8 @@ import random, math, copy
 
 def create_board():
     global board
+    global preferred_directions
+    preferred_directions = []
     """Creates the initial Three Musketeers board and makes it globally
        available (That is, it doesn't have to be passed around as a
        parameter.) 'M' represents a Musketeer, 'R' represents one of
@@ -32,6 +34,8 @@ def set_board(new_board):
     """Replaces the global board with new_board."""
     global board
     board = new_board
+    global preferred_directions
+    preferred_directions = []
 
 def get_board():
     """Just returns the board. Possibly useful for unit tests."""
@@ -241,6 +245,26 @@ def choose_computer_move_musketeer(mode):
     elif mode == 'options':
         return maximise_move(musketeer_options)
 
+def move_guardsmen(board):
+    moves = all_possible_moves_for_local(board, 'R')
+    if preferred_directions == []:
+        move = random.choice(moves)
+        (loc, dir) = move
+        preferred_directions.append(dir)
+        return move
+    good_moves = []
+    for preferred_direction in preferred_directions:
+        for move in moves:
+            (loc, dir) = move
+            if dir == preferred_direction:
+                good_moves.append(move)
+    if good_moves == []:
+        move = random.choice(moves)
+        (loc, dir) = move
+        preferred_directions.append(dir)
+        return move
+    return random.choice(good_moves)
+
 def optimum_move(board, who):
     if not has_some_legal_move_somewhere_local(board, who):
         return True
@@ -264,7 +288,7 @@ def optimum_move(board, who):
     # given that it is R's turn
     else:
         board_copy = copy.deepcopy(board)
-        move = random.choice(moves)
+        move = move_guardsmen(board_copy)
         (loc, dir) = move
         make_move_local(board_copy, loc, dir)
         print(move)
