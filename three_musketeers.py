@@ -266,6 +266,13 @@ def move_guardsmen(board):
     return random.choice(good_moves)
 
 def optimum_move(board, who):
+    move = optimum_move_rec(board, who)
+    if move == False:
+        moves = all_possible_moves_for_local(board, who)
+        return random.choice(moves)
+    return move
+
+def optimum_move_rec(board, who):
     if not has_some_legal_move_somewhere_local(board, who):
         return True
     moves = all_possible_moves_for_local(board, who)
@@ -280,7 +287,7 @@ def optimum_move(board, who):
             print_board_local(board_copy)
             if is_enemy_win_local(board_copy):
                 return False
-            win = optimum_move(board_copy, 'R')
+            win = optimum_move_rec(board_copy, 'R')
             if win:
                 return move
 
@@ -293,12 +300,12 @@ def optimum_move(board, who):
         make_move_local(board_copy, loc, dir)
         print(move)
         print_board_local(board_copy)
-        win = optimum_move(board_copy, 'M')
+        win = optimum_move_rec(board_copy, 'M')
         if win:
             return True
     # evaluate whether the game is over?
     # recursively, alternate who
-    return False
+    return random.choice(moves)
 
 def is_musketeer_win_local(board, who):
     return not is_enemy_win_local(board) and not has_some_legal_move_somewhere(who)

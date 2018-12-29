@@ -120,3 +120,15 @@ def test_choose_computer_move():
 
 def test_is_enemy_win():
     assert is_enemy_win() == False
+
+def test_optimum_move():
+    r = 'R'
+    m = 'M'
+    _ = '-'
+    late_game_board = [[_,m,_,_,_],
+    [_,_,_,_,_],
+     [m,r,_,_,_],
+     [_,m,_,_,_],
+     [_,_,_,_,_]]
+    (loc, dir) = optimum_move(late_game_board, 'M')
+    assert is_legal_move_local(late_game_board, loc, dir)
