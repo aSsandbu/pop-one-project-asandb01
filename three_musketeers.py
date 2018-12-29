@@ -216,12 +216,11 @@ def choose_computer_move(who):
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
     if who == 'M':
-        return random.choice(choose_computer_move_musketeer('options'))
-    moves = all_possible_moves_for(who)
-    return random.choice(moves)
+        return optimum_move(board, who)
+    return move_guardsmen(board)
 
 def musketeer_options(location, direction):
-    '''Returns the number of moves available after making a move.'''
+    """Returns the number of moves available after making a move."""
     board_copy = copy.deepcopy(board)
     make_move_local(board_copy, location, direction) # Move M
     enemy_moves = all_possible_moves_for_local(board_copy, 'R')
@@ -231,6 +230,8 @@ def musketeer_options(location, direction):
     return len(moves) # How many M moves are available?
 
 def maximise_move(fun):
+    """Chooses the moves, which has the maximum return value of the given
+    function fun"""
     moves = all_possible_moves_for('M')
     max = 0
     max_moves = []
@@ -243,15 +244,74 @@ def maximise_move(fun):
             max_moves.append(move)
     return max_moves
 
-def choose_computer_move_musketeer(mode):
-    if mode == 'distance':
-        return maximise_move(musketeer_distance)
-    elif mode == 'options':
-        return maximise_move(musketeer_options)
+def move_guardsmen(board):
+    moves = all_possible_moves_for_local(board, 'R')
+    if preferred_directions == []:
+        move = random.choice(moves)
+        (loc, dir) = move
+        preferred_directions.append(dir)
+        return move
+    good_moves = []
+    for preferred_direction in preferred_directions:
+        for move in moves:
+            (loc, dir) = move
+            if dir == preferred_direction:
+                good_moves.append(move)
+    if good_moves == []:
+        move = random.choice(moves)
+        (loc, dir) = move
+        preferred_directions.append(dir)
+        return move
+    return random.choice(good_moves)
 
-def is_enemy_win():
-    """Returns True if all 3 Musketeers are in the same row or column."""
-    loc = player_locations('M')
+def optimum_move(board, who):
+    move = optimum_move_rec(board, who)
+    if move == False:
+        moves = all_possible_moves_for_local(board, who)
+        return random.choice(moves)
+    return move
+
+def optimum_move_rec(board, who):
+    if not has_some_legal_move_somewhere_local(board, who):
+        return True
+    moves = all_possible_moves_for_local(board, who)
+    random.shuffle(moves)
+    # given that it is M's turn
+    if who == 'M':
+        # who is moving?
+        for move in moves:
+            board_copy = copy.deepcopy(board)
+            (loc, dir) = move
+            make_move_local(board_copy, loc, dir)
+            print(move)
+            print_board_local(board_copy)
+            if is_enemy_win_local(board_copy):
+                return False
+            win = optimum_move_rec(board_copy, 'R')
+            if win:
+                return move
+
+
+    # given that it is R's turn
+    else:
+        board_copy = copy.deepcopy(board)
+        move = move_guardsmen(board_copy)
+        (loc, dir) = move
+        make_move_local(board_copy, loc, dir)
+        print(move)
+        print_board_local(board_copy)
+        win = optimum_move_rec(board_copy, 'M')
+        if win:
+            return True
+    # evaluate whether the game is over?
+    # recursively, alternate who
+    return False
+
+def is_musketeer_win_local(board, who):
+    return not is_enemy_win_local(board) and not has_some_legal_move_somewhere(who)
+
+def is_enemy_win_local(board):
+    loc = player_locations_local(board, 'M')
     if loc[0][0] == loc[1][0] and loc[1][0] == loc[2][0]:
         return True
     if loc[0][1] == loc[1][1] and loc[1][1] == loc[2][1]:
