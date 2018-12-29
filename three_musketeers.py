@@ -16,6 +16,8 @@ import random, math, copy
 
 def create_board():
     global board
+    global preferred_directions
+    preferred_directions = []
     """Creates the initial Three Musketeers board and makes it globally
        available (That is, it doesn't have to be passed around as a
        parameter.) 'M' represents a Musketeer, 'R' represents one of
@@ -32,6 +34,8 @@ def set_board(new_board):
     """Replaces the global board with new_board."""
     global board
     board = new_board
+    global preferred_directions
+    preferred_directions = []
 
 def get_board():
     """Just returns the board. Possibly useful for unit tests."""
@@ -129,24 +133,30 @@ def is_legal_move(location, direction):
     You can assume that input will always be in correct range."""
     return is_legal_move_local(board, location, direction)
 
-def can_move_piece_at(location):
+def can_move_piece_at_local(board, location):
     """Tests whether the player at the location has at least one move available.
     You can assume that input will always be in correct range."""
     directions = ['up', 'down', 'left', 'right']
     for dir in directions:
-        if is_legal_move(location, dir):
+        if is_legal_move_local(board, location, dir):
             return True
     return False
 
-def has_some_legal_move_somewhere(who):
+def can_move_piece_at(location):
+    return can_move_piece_at_local(board, location)
+
+def has_some_legal_move_somewhere_local(board, who):
     """Tests whether a legal move exists for player "who" (which must
     be either 'M' or 'R'). Does not provide any information on where
     the legal move is.
     You can assume that input will always be in correct range."""
-    for location in player_locations(who):
-        if can_move_piece_at(location):
+    for location in player_locations_local(board, who):
+        if can_move_piece_at_local(board, location):
             return True
     return False
+
+def has_some_legal_move_somewhere(who):
+    return has_some_legal_move_somewhere_local(board, who)
 
 def possible_moves_from_local(board, location):
     legal_moves = []
@@ -191,24 +201,10 @@ def make_move(location, direction):
     be in correct range."""
     return make_move_local(board, location, direction)
 
-def make_move_local(local_board, location, direction):
+def make_move_local(board, location, direction):
     move = adjacent_location(location, direction)
-    local_board[move[0]][move[1]] = at(location)
-    local_board[location[0]][location[1]] = '-'
-
-def distance(a, b):
-    #math.sqrt() version
-    return math.sqrt(abs(a[0] - b[0])) + math.sqrt(abs(a[1] - b[1]))
-
-def musketeer_distance(location, direction):
-    board_copy = copy.deepcopy(board)
-    make_move_local(board_copy, location, direction)
-    locs = player_locations_local(board_copy, 'M')
-    d1 = distance(locs[0], locs[1])
-    d2 = distance(locs[0], locs[2])
-    d3 = distance(locs[1], locs[2])
-    mdist = d1 + d2 + d3
-    return mdist
+    board[move[0]][move[1]] = at_local(board, location)
+    board[location[0]][location[1]] = '-'
 
 def choose_computer_move(who):
     """The computer chooses a move for a Musketeer (who = 'M') or an
@@ -216,7 +212,7 @@ def choose_computer_move(who):
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
     if who == 'M':
-        return random.choice(choose_computer_move_musketeer('options'))
+        return optimum_move(board, who)
     moves = all_possible_moves_for(who)
     return random.choice(moves)
 
@@ -249,20 +245,92 @@ def choose_computer_move_musketeer(mode):
     elif mode == 'options':
         return maximise_move(musketeer_options)
 
-def is_enemy_win():
-    """Returns True if all 3 Musketeers are in the same row or column."""
-    loc = player_locations('M')
+def move_guardsmen(board):
+    moves = all_possible_moves_for_local(board, 'R')
+    if preferred_directions == []:
+        move = random.choice(moves)
+        (loc, dir) = move
+        preferred_directions.append(dir)
+        return move
+    good_moves = []
+    for preferred_direction in preferred_directions:
+        for move in moves:
+            (loc, dir) = move
+            if dir == preferred_direction:
+                good_moves.append(move)
+    if good_moves == []:
+        move = random.choice(moves)
+        (loc, dir) = move
+        preferred_directions.append(dir)
+        return move
+    return random.choice(good_moves)
+
+def optimum_move(board, who):
+    move = optimum_move_rec(board, who)
+    if move == False:
+        moves = all_possible_moves_for_local(board, who)
+        return random.choice(moves)
+    return move
+
+def optimum_move_rec(board, who):
+    if not has_some_legal_move_somewhere_local(board, who):
+        return True
+    moves = all_possible_moves_for_local(board, who)
+    random.shuffle(moves)
+    # given that it is M's turn
+    if who == 'M':
+        # who is moving?
+        for move in moves:
+            board_copy = copy.deepcopy(board)
+            (loc, dir) = move
+            make_move_local(board_copy, loc, dir)
+            print(move)
+            print_board_local(board_copy)
+            if is_enemy_win_local(board_copy):
+                return False
+            win = optimum_move_rec(board_copy, 'R')
+            if win:
+                return move
+
+
+    # given that it is R's turn
+    else:
+        board_copy = copy.deepcopy(board)
+        move = move_guardsmen(board_copy)
+        (loc, dir) = move
+        make_move_local(board_copy, loc, dir)
+        print(move)
+        print_board_local(board_copy)
+        win = optimum_move_rec(board_copy, 'M')
+        if win:
+            return True
+    # evaluate whether the game is over?
+    # recursively, alternate who
+    return False
+
+def is_musketeer_win_local(board, who):
+    return not is_enemy_win_local(board) and not has_some_legal_move_somewhere(who)
+
+def is_enemy_win_local(board):
+    loc = player_locations_local(board, 'M')
     if loc[0][0] == loc[1][0] and loc[1][0] == loc[2][0]:
         return True
     if loc[0][1] == loc[1][1] and loc[1][1] == loc[2][1]:
         return True
     return False
 
+def is_enemy_win():
+    """Returns True if all 3 Musketeers are in the same row or column."""
+    return is_enemy_win_local(board)
+
 #---------- Communicating with the user ----------
 #----you do not need to modify code below unless you find a bug
 #----a bug in it before you move to stage 3
 
 def print_board():
+    print_board_local(board)
+
+def print_board_local(board):
     print("    1  2  3  4  5")
     print("  ---------------")
     ch = "A"
