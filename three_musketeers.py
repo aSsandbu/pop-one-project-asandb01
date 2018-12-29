@@ -276,6 +276,7 @@ def optimum_move_rec(board, who):
     if not has_some_legal_move_somewhere_local(board, who):
         return True
     moves = all_possible_moves_for_local(board, who)
+    random.shuffle(moves)
     # given that it is M's turn
     if who == 'M':
         # who is moving?
@@ -305,7 +306,7 @@ def optimum_move_rec(board, who):
             return True
     # evaluate whether the game is over?
     # recursively, alternate who
-    return random.choice(moves)
+    return False
 
 def is_musketeer_win_local(board, who):
     return not is_enemy_win_local(board) and not has_some_legal_move_somewhere(who)
