@@ -16,6 +16,8 @@ import random, math, copy
 
 def create_board():
     global board
+    global preferred_directions
+    preferred_directions = []
     """Creates the initial Three Musketeers board and makes it globally
        available (That is, it doesn't have to be passed around as a
        parameter.) 'M' represents a Musketeer, 'R' represents one of
@@ -32,6 +34,8 @@ def set_board(new_board):
     """Replaces the global board with new_board."""
     global board
     board = new_board
+    global preferred_directions
+    preferred_directions = []
 
 def get_board():
     """Just returns the board. Possibly useful for unit tests."""
@@ -129,24 +133,30 @@ def is_legal_move(location, direction):
     You can assume that input will always be in correct range."""
     return is_legal_move_local(board, location, direction)
 
-def can_move_piece_at(location):
+def can_move_piece_at_local(board, location):
     """Tests whether the player at the location has at least one move available.
     You can assume that input will always be in correct range."""
     directions = ['up', 'down', 'left', 'right']
     for dir in directions:
-        if is_legal_move(location, dir):
+        if is_legal_move_local(board, location, dir):
             return True
     return False
 
-def has_some_legal_move_somewhere(who):
+def can_move_piece_at(location):
+    return can_move_piece_at_local(board, location)
+
+def has_some_legal_move_somewhere_local(board, who):
     """Tests whether a legal move exists for player "who" (which must
     be either 'M' or 'R'). Does not provide any information on where
     the legal move is.
     You can assume that input will always be in correct range."""
-    for location in player_locations(who):
-        if can_move_piece_at(location):
+    for location in player_locations_local(board, who):
+        if can_move_piece_at_local(board, location):
             return True
     return False
+
+def has_some_legal_move_somewhere(who):
+    return has_some_legal_move_somewhere_local(board, who)
 
 def possible_moves_from_local(board, location):
     legal_moves = []
@@ -191,24 +201,10 @@ def make_move(location, direction):
     be in correct range."""
     return make_move_local(board, location, direction)
 
-def make_move_local(local_board, location, direction):
+def make_move_local(board, location, direction):
     move = adjacent_location(location, direction)
-    local_board[move[0]][move[1]] = at(location)
-    local_board[location[0]][location[1]] = '-'
-
-def distance(a, b):
-    #math.sqrt() version
-    return math.sqrt(abs(a[0] - b[0])) + math.sqrt(abs(a[1] - b[1]))
-
-def musketeer_distance(location, direction):
-    board_copy = copy.deepcopy(board)
-    make_move_local(board_copy, location, direction)
-    locs = player_locations_local(board_copy, 'M')
-    d1 = distance(locs[0], locs[1])
-    d2 = distance(locs[0], locs[2])
-    d3 = distance(locs[1], locs[2])
-    mdist = d1 + d2 + d3
-    return mdist
+    board[move[0]][move[1]] = at_local(board, location)
+    board[location[0]][location[1]] = '-'
 
 def choose_computer_move(who):
     """The computer chooses a move for a Musketeer (who = 'M') or an
@@ -318,11 +314,18 @@ def is_enemy_win_local(board):
         return True
     return False
 
+def is_enemy_win():
+    """Returns True if all 3 Musketeers are in the same row or column."""
+    return is_enemy_win_local(board)
+
 #---------- Communicating with the user ----------
 #----you do not need to modify code below unless you find a bug
 #----a bug in it before you move to stage 3
 
 def print_board():
+    print_board_local(board)
+
+def print_board_local(board):
     print("    1  2  3  4  5")
     print("  ---------------")
     ch = "A"

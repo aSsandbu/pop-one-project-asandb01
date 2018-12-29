@@ -110,32 +110,25 @@ def test_make_move():
     assert at((0,4)) == '-'
     assert at((1,4)) == 'M'
 
-def test_distance():
-    #Linear distance formula
-    '''assert distance((0,0), (4,4)) == 8
-    assert distance((0,0), (2,2)) == 4
-    assert distance((4,1), (0,3)) == 6'''
-
-    #Sqrt distance formula
-    assert distance((0,0), (4,4)) == 4
-    assert distance((0,0), (2,2)) == 2 * math.sqrt(2)
-    assert distance((4,1), (0,3)) == 2 + math.sqrt(2)
-
-def test_musketeer_distance():
-    create_board()
-    assert musketeer_distance((2,2), 'left') == 5 + math.sqrt(3) + 2 * math.sqrt(2)
-    assert at((2,2)) == 'M'
-
-def test_musketeer_options():
-    pass
-
-def test_maximise_move_options():
-    pass
-
 def test_choose_computer_move():
     create_board()
-    move = choose_computer_move('M')
-    assert is_legal_move(move[0], move[1])
+    (loc, dir) = choose_computer_move('M')
+    assert is_legal_move(loc, dir)
+    make_move(loc, dir)
+    (loc, dir) = choose_computer_move('R')
+    assert is_legal_move(loc, dir)
 
 def test_is_enemy_win():
     assert is_enemy_win() == False
+
+def test_optimum_move():
+    r = 'R'
+    m = 'M'
+    _ = '-'
+    late_game_board = [[_,m,_,_,_],
+    [_,_,_,_,_],
+     [m,r,_,_,_],
+     [_,m,_,_,_],
+     [_,_,_,_,_]]
+    (loc, dir) = optimum_move(late_game_board, 'M')
+    assert is_legal_move_local(late_game_board, loc, dir)
