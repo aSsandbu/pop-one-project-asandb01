@@ -112,19 +112,22 @@ def is_legal_move_by_enemy(location, direction):
     else:
         raise ValueError
 
+def is_legal_move_local(board, location, direction):
+    if not is_within_board(location, direction):
+        return False
+    move = adjacent_location(location, direction)
+    if at_local(board, location) == 'M' and at_local(board, move) == 'R':
+        return True
+    elif at_local(board, location) == 'R' and at_local(board, move) == '-':
+        return True
+    else:
+        return False
+
 def is_legal_move(location, direction):
     """Tests whether it is legal to move the piece at the location
     in the given direction.
     You can assume that input will always be in correct range."""
-    if not is_within_board(location, direction):
-        return False
-    move = adjacent_location(location, direction)
-    if at(location) == 'M' and at(move) == 'R':
-        return True
-    elif at(location) == 'R' and at(move) == '-':
-        return True
-    else:
-        return False
+    return is_legal_move_local(board, location, direction)
 
 def can_move_piece_at(location):
     """Tests whether the player at the location has at least one move available.
@@ -145,17 +148,20 @@ def has_some_legal_move_somewhere(who):
             return True
     return False
 
+def possible_moves_from_local(board, location):
+    legal_moves = []
+    directions = ['up', 'down', 'left', 'right']
+    for dir in directions:
+        if is_legal_move_local(board, location, dir):
+            legal_moves.append(dir)
+    return legal_moves
+
 def possible_moves_from(location):
     """Returns a list of directions ('left', etc.) in which it is legal
        for the player at location to move. If there is no player at
        location, returns the empty list, [].
        You can assume that input will always be in correct range."""
-    legal_moves = []
-    directions = ['up', 'down', 'left', 'right']
-    for dir in directions:
-        if is_legal_move(location, dir):
-            legal_moves.append(dir)
-    return legal_moves
+    return possible_moves_from_local(board, location)
 
 def is_legal_location(location):
     """Tests if the location is legal on a 5x5 board.
@@ -170,7 +176,7 @@ def is_within_board(location, direction):
 
 def all_possible_moves_for_local(board, player):
     possible_moves = [(location, move) for location in player_locations_local(board, player)
-                                       for move in possible_moves_from(location)]
+                                       for move in possible_moves_from_local(board, location)]
     return possible_moves
 
 def all_possible_moves_for(player):
@@ -217,9 +223,12 @@ def choose_computer_move(who):
 def musketeer_options(location, direction):
     '''Returns the number of moves available after making a move.'''
     board_copy = copy.deepcopy(board)
-    make_move_local(board_copy, location, direction)
+    make_move_local(board_copy, location, direction) # Move M
+    enemy_moves = all_possible_moves_for_local(board_copy, 'R')
+    enemy_move = random.choice(enemy_moves) # Move R
+    make_move_local(board_copy, enemy_move[0], enemy_move[1])
     moves = all_possible_moves_for_local(board_copy, 'M')
-    return len(moves)
+    return len(moves) # How many M moves are available?
 
 def maximise_move(fun):
     moves = all_possible_moves_for('M')
@@ -231,19 +240,6 @@ def maximise_move(fun):
             max_moves = [move]
             max = value
         elif value == max:
-            max_moves.append(move)
-    return max_moves
-
-def choose_computer_move_musketeer_distance():
-    moves = all_possible_moves_for('M')
-    max_distance = 0
-    max_moves = []
-    for move in moves:
-        distance = musketeer_distance(move[0], move[1])
-        if distance > max_distance:
-            max_moves = [move]
-            max_distance = distance
-        elif distance == max_distance:
             max_moves.append(move)
     return max_moves
 

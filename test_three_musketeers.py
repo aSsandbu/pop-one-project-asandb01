@@ -126,11 +126,11 @@ def test_musketeer_distance():
     assert musketeer_distance((2,2), 'left') == 5 + math.sqrt(3) + 2 * math.sqrt(2)
     assert at((2,2)) == 'M'
 
-def test_choose_computer_move_musketeer():
-    create_board()
-    make_move((2,2), 'up')
-    make_move((2,3), 'left')
-    #assert choose_computer_move_musketeer('distance') == ((1,2), 'down')
+def test_musketeer_options():
+    pass
+
+def test_maximise_move_options():
+    pass
 
 def test_choose_computer_move():
     create_board()
