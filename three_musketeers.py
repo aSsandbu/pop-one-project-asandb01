@@ -168,13 +168,16 @@ def is_within_board(location, direction):
     move = adjacent_location(location, direction)
     return 0 <= move[0] <= 4 and 0 <= move[1] <= 4
 
+def all_possible_moves_for_local(board, player):
+    possible_moves = [(location, move) for location in player_locations_local(board, player)
+                                       for move in possible_moves_from(location)]
+    return possible_moves
+
 def all_possible_moves_for(player):
     """Returns every possible move for the player ('M' or 'R') as a list
        (location, direction) tuples.
        You can assume that input will always be in correct range."""
-    possible_moves = [(location, move) for location in player_locations(player)
-                                       for move in possible_moves_from(location)]
-    return possible_moves
+    return all_possible_moves_for_local(board, player)
 
 def make_move(location, direction):
     """Moves the piece in location in the indicated direction.
@@ -207,22 +210,38 @@ def choose_computer_move(who):
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
     if who == 'M':
-        return random.choice(choose_computer_move_musketeer('distance'))
+        return random.choice(choose_computer_move_musketeer('options'))
     moves = all_possible_moves_for(who)
     return random.choice(moves)
 
-def musketeer_max_options():
-    pass
+def musketeer_options(location, direction):
+    '''Returns the number of moves available after making a move.'''
+    board_copy = copy.deepcopy(board)
+    make_move_local(board_copy, location, direction)
+    moves = all_possible_moves_for_local(board_copy, 'M')
+    return len(moves)
+
+def maximise_move(fun):
+    moves = all_possible_moves_for('M')
+    max = 0
+    max_moves = []
+    for move in moves:
+        value = fun(move[0], move[1])
+        if value > max:
+            max_moves = [move]
+            max = value
+        elif value == max:
+            max_moves.append(move)
+    return max_moves
 
 def choose_computer_move_musketeer_distance():
     moves = all_possible_moves_for('M')
     max_distance = 0
-    max_moves = [(0,0)]
+    max_moves = []
     for move in moves:
         distance = musketeer_distance(move[0], move[1])
         if distance > max_distance:
-            max_move = [(0,0)]
-            max_moves[0] = move
+            max_moves = [move]
             max_distance = distance
         elif distance == max_distance:
             max_moves.append(move)
@@ -230,9 +249,9 @@ def choose_computer_move_musketeer_distance():
 
 def choose_computer_move_musketeer(mode):
     if mode == 'distance':
-        return choose_computer_move_musketeer_distance()
-    else:
-        moves = all_possible_moves_for('M')
+        return maximise_move(musketeer_distance)
+    elif mode == 'options':
+        return maximise_move(musketeer_options)
 
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""
