@@ -197,10 +197,10 @@ def make_move(location, direction):
     be in correct range."""
     return make_move_local(board, location, direction)
 
-def make_move_local(local_board, location, direction):
+def make_move_local(board, location, direction):
     move = adjacent_location(location, direction)
-    local_board[move[0]][move[1]] = at(location)
-    local_board[location[0]][location[1]] = '-'
+    board[move[0]][move[1]] = at_local(board, location)
+    board[location[0]][location[1]] = '-'
 
 def choose_computer_move(who):
     """The computer chooses a move for a Musketeer (who = 'M') or an
@@ -208,7 +208,7 @@ def choose_computer_move(who):
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
     if who == 'M':
-        return random.choice(choose_computer_move_musketeer('options'))
+        return choose_move_local(board, who)
     moves = all_possible_moves_for(who)
     return random.choice(moves)
 
@@ -241,13 +241,40 @@ def choose_computer_move_musketeer(mode):
     elif mode == 'options':
         return maximise_move(musketeer_options)
 
-def choose_move_local(who):
-    # given that it is our turn
-    # we have some options
-    # make a move for who
+def choose_move_local(board, who):
+    if not has_some_legal_move_somewhere_local(board, who):
+        return True
+    moves = all_possible_moves_for_local(board, who)
+    # given that it is M's turn
+    if who == 'M':
+        # make a move for who
+        for move in moves:
+            board_copy = copy.deepcopy(board)
+            (loc, dir) = move
+            make_move_local(board_copy, loc, dir)
+            print(move)
+            print_board_local(board_copy)
+            if is_enemy_win_local(board_copy):
+                return False
+            win = choose_move_local(board_copy, 'R')
+            if win:
+                return move
+
+
+    # given that it is R's turn
+    else:
+        board_copy = copy.deepcopy(board)
+        move = random.choice(moves)
+        (loc, dir) = move
+        make_move_local(board_copy, loc, dir)
+        print(move)
+        print_board_local(board_copy)
+        win = choose_move_local(board_copy, 'M')
+        if win:
+            return True
     # evaluate whether the game is over?
     # recursively, alternate who
-    pass
+    return False
 
 def is_musketeer_win_local(board, who):
     return not is_enemy_win_local(board) and not has_some_legal_move_somewhere(who)
@@ -269,6 +296,9 @@ def is_enemy_win():
 #----a bug in it before you move to stage 3
 
 def print_board():
+    print_board_local(board)
+
+def print_board_local(board):
     print("    1  2  3  4  5")
     print("  ---------------")
     ch = "A"
