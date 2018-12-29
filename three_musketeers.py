@@ -129,24 +129,30 @@ def is_legal_move(location, direction):
     You can assume that input will always be in correct range."""
     return is_legal_move_local(board, location, direction)
 
-def can_move_piece_at(location):
+def can_move_piece_at_local(board, location):
     """Tests whether the player at the location has at least one move available.
     You can assume that input will always be in correct range."""
     directions = ['up', 'down', 'left', 'right']
     for dir in directions:
-        if is_legal_move(location, dir):
+        if is_legal_move_local(board, location, dir):
             return True
     return False
 
-def has_some_legal_move_somewhere(who):
+def can_move_piece_at(location):
+    return can_move_piece_at_local(board, location)
+
+def has_some_legal_move_somewhere_local(board, who):
     """Tests whether a legal move exists for player "who" (which must
     be either 'M' or 'R'). Does not provide any information on where
     the legal move is.
     You can assume that input will always be in correct range."""
-    for location in player_locations(who):
-        if can_move_piece_at(location):
+    for location in player_locations_local(board, who):
+        if can_move_piece_at_local(board, location):
             return True
     return False
+
+def has_some_legal_move_somewhere(who):
+    return has_some_legal_move_somewhere_local(board, who)
 
 def possible_moves_from_local(board, location):
     legal_moves = []
@@ -234,6 +240,17 @@ def choose_computer_move_musketeer(mode):
         return maximise_move(musketeer_distance)
     elif mode == 'options':
         return maximise_move(musketeer_options)
+
+def choose_move_local(who):
+    # given that it is our turn
+    # we have some options
+    # make a move for who
+    # evaluate whether the game is over?
+    # recursively, alternate who
+    pass
+
+def is_musketeer_win_local(board, who):
+    return not is_enemy_win_local(board) and not has_some_legal_move_somewhere(who)
 
 def is_enemy_win_local(board):
     loc = player_locations_local(board, 'M')
