@@ -112,8 +112,11 @@ def test_make_move():
 
 def test_choose_computer_move():
     create_board()
-    move = choose_computer_move('M')
-    assert is_legal_move(move[0], move[1])
+    (loc, dir) = choose_computer_move('M')
+    assert is_legal_move(loc, dir)
+    make_move(loc, dir)
+    (loc, dir) = choose_computer_move('R')
+    assert is_legal_move(loc, dir)
 
 def test_is_enemy_win():
     assert is_enemy_win() == False

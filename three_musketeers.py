@@ -208,7 +208,7 @@ def choose_computer_move(who):
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
     if who == 'M':
-        return choose_move_local(board, who)
+        return optimum_move(board, who)
     moves = all_possible_moves_for(who)
     return random.choice(moves)
 
@@ -241,13 +241,13 @@ def choose_computer_move_musketeer(mode):
     elif mode == 'options':
         return maximise_move(musketeer_options)
 
-def choose_move_local(board, who):
+def optimum_move(board, who):
     if not has_some_legal_move_somewhere_local(board, who):
         return True
     moves = all_possible_moves_for_local(board, who)
     # given that it is M's turn
     if who == 'M':
-        # make a move for who
+        # who is moving?
         for move in moves:
             board_copy = copy.deepcopy(board)
             (loc, dir) = move
@@ -256,7 +256,7 @@ def choose_move_local(board, who):
             print_board_local(board_copy)
             if is_enemy_win_local(board_copy):
                 return False
-            win = choose_move_local(board_copy, 'R')
+            win = optimum_move(board_copy, 'R')
             if win:
                 return move
 
@@ -269,7 +269,7 @@ def choose_move_local(board, who):
         make_move_local(board_copy, loc, dir)
         print(move)
         print_board_local(board_copy)
-        win = choose_move_local(board_copy, 'M')
+        win = optimum_move(board_copy, 'M')
         if win:
             return True
     # evaluate whether the game is over?
