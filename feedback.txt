@@ -1,0 +1,23 @@
+Total coursework mark: 17.0  (out of 20)
+
+Exercise sheets mark:  10  (out of 10)
+
+Project mark:  7.0  (out of 10)
+
+Project feedback and mark details
+
+Correctness and adherence to specification:  30%  (out of 30%)
+
+The code works correctly and adheres to the specification
+
+Completeness of code, tests, and commit history:  30%    (out of 30%)   
+
+Tests also pass and are adequate for the scope of this work. There is a rich commit history.
+
+Coding style: 10%   (out of 10%) 
+
+Good use of list comprehensions. Style is good.
+
+Extension:  0%     (out of 30%) 
+
+Extensions were not provided.
